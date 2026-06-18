@@ -1,25 +1,26 @@
 const express = require("express");
 const router = express.Router();
 
-const authMiddleware = require(
-  "../middleware/authMiddleware"
-);
+const authMiddleware = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware");
 
 const {
   createCommunity,
   getCommunities,
-  joinCommunity
-} = require(
-  "../controllers/communityController"
-);
+  getCommunityById,
+  joinCommunity,
+  leaveCommunity
+} = require("../controllers/communityController");
 
-// Public Route
+// Public Routes
 router.get("/", getCommunities);
+router.get("/:id", getCommunityById);
 
 // Protected Routes
 router.post(
   "/",
   authMiddleware,
+  roleMiddleware("trainer", "admin"),
   createCommunity
 );
 
@@ -27,6 +28,12 @@ router.post(
   "/:id/join",
   authMiddleware,
   joinCommunity
+);
+
+router.delete(
+  "/:id/leave",
+  authMiddleware,
+  leaveCommunity
 );
 
 module.exports = router;
